@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+    <h1>User Dashboard</h1>
+    <div class="logout">
+        Logged in as {{ user.name }} |
+        <a href="{{ url_for('logout') }}">Logout</a>
+        
+
+    </div>
+    <div class="about">
+        Want to know about admin details or contact |
+        <a href="{{ url_for('about') }}">About Admin</a>
+
+    </div>
+</header>
+
+    
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash-message">
+      {% for msg in messages %}
+        <p>{{ msg }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+    <h3>Available Books</h3>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Available Copies</th>
+            <th>Action</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.available_copies }}</td>
+            <td>
+                {% if book.available_copies > 0 %}
+                    <a href="{{ url_for('borrow', book_id=book.id) }}">Borrow</a>
+                {% else %}
+                    <form method="POST" action="{{ url_for('request_waitlist', book_id=book.id) }}">
+                        <button type="submit">Request to Borrow</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Your Borrowed Books</h3>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Title</th>
+            <th>Borrow Date</th>
+            <th>Action</th>
+        </tr>
+        {% for item in borrowed %}
+        <tr>
+            <td>{{ item.book.title }}</td>
+            <td>{{ item.borrow_date.strftime('%Y-%m-%d') }}</td>
+            <td><a href="{{ url_for('return_book', borrow_id=item.id) }}">Return</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+   <h3>Your Fine History</h3>
+   
+    <table border="1" cellpadding="10">
+    <tr>
+        <th>Book</th>
+        <th>Fine Amount (₹)</th>
+        <th>Date Paid</th>
+        
+    </tr>
+    {% for fine in fines %}
+    <tr>
+        <td>{{ fine.book.title }}</td>
+        <td>{{ fine.fine_amount }}</td>
+        
+        <td>{{ fine.date_paid.strftime('%Y-%m-%d') }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3">No fine records.</td></tr>
+    {% endfor %}
+</table>
+</body>
+</html>

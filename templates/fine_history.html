@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Fine History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-records {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h3>Your Fine History</h3>
+
+    <table>
+        <tr>
+            <th>Book</th>
+            <th>Fine Amount (₹)</th>
+            <th>Date Paid</th>
+            <th>Date Borrowed</th>
+        </tr>
+        {% for item in fine_data %}
+        <tr>
+            <td>{{ item.fine.book.title }}</td>
+            <td>{{ item.fine.fine_amount }}</td>
+            <td>{{ item.fine.date_paid.strftime('%Y-%m-%d') }}</td>
+            <td>
+                {% if item.borrow_date %}
+                    {{ item.borrow_date.strftime('%Y-%m-%d') }}
+                {% else %}
+                    Not Available
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="no-records">No fine records.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

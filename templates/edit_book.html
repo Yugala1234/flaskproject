@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        button,
+        a.button {
+            padding: 8px 16px;
+            border: none;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        a.button {
+            background-color: #6c757d;
+        }
+        button:hover,
+        a.button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit Book</h2>
+    <form method="POST" action="{{ url_for('edit_book', book_id=book.id) }}">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" value="{{ book.title }}" required>
+
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" value="{{ book.author }}" required>
+
+        <label for="total_copies">Total Copies</label>
+        <input type="number" id="total_copies" name="total_copies" min="1" value="{{ book.total_copies }}" required>
+
+        <div class="button-group">
+            <button type="submit">Update Book</button>
+            <a href="{{ url_for('dashboard') }}" class="button">Cancel</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
