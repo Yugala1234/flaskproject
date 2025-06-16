@@ -50,6 +50,8 @@ class FlaskTestCase(unittest.TestCase):
             password='password'
         ), follow_redirects=True)
         self.assertIn(b'Welcome, Test User!', response.data)
+
+        # Access the session from the response context
         with self.app as c:
             self.assertIn('user_id', c.session)
             self.assertIn('role', c.session)
