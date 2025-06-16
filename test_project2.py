@@ -45,36 +45,51 @@ class FlaskTestCase(unittest.TestCase):
             db.session.commit()
     
         # Test successful login
-        with self.app as c:
-            response = c.post('/login', data=dict(
-                username='testuser',
-                password='password'
-            ), follow_redirects=True)
+        with app.test_request_context('/login', method='POST', data=dict(
+            username='testuser',
+            password='password'
+        )):
+            response = app.preprocess_request()
+            # If preprocess_request returns a response, it means a redirect or error occurred
+            if response is None:
+                # Process the request and get the response
+                response = app.dispatch_request()
     
             self.assertIn(b'Welcome, Test User!', response.data)
-            self.assertIn('user_id', c.session)
-            self.assertIn('role', c.session)
-            self.assertEqual(c.session['role'], 'user')
+            from flask import session # Import session within the context
+            self.assertIn('user_id', session)
+            self.assertIn('role', session)
+            self.assertEqual(session['role'], 'user')
+    
     
         # Test login with incorrect password
-        with self.app as c:
-            response = c.post('/login', data=dict(
-                username='testuser',
-                password='wrongpassword'
-            ), follow_redirects=True)
+        with app.test_request_context('/login', method='POST', data=dict(
+            username='testuser',
+            password='wrongpassword'
+        )):
+            response = app.preprocess_request()
+            if response is None:
+                response = app.dispatch_request()
+    
             self.assertIn(b'Invalid credentials.', response.data)
-            self.assertNotIn('user_id', c.session)
-            self.assertNotIn('role', c.session)
+            from flask import session # Import session within the context
+            self.assertNotIn('user_id', session)
+            self.assertNotIn('role', session)
     
         # Test login with non-existent username
-        with self.app as c:
-            response = c.post('/login', data=dict(
-                username='nonexistentuser',
-                password='password'
-            ), follow_redirects=True)
+        with app.test_request_context('/login', method='POST', data=dict(
+            username='nonexistentuser',
+            password='password'
+        )):
+            response = app.preprocess_request()
+            if response is None:
+                response = app.dispatch_request()
+    
             self.assertIn(b'Invalid credentials.', response.data)
-            self.assertNotIn('user_id', c.session)
-            self.assertNotIn('role', c.session)
+            from flask import session # Import session within the context
+            self.assertNotIn('user_id', session)
+            self.assertNotIn('role', session)
+
         
 if __name__ == '__main__':
     unittest.main()
