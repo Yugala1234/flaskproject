@@ -55,10 +55,12 @@ class FlaskTestCase(unittest.TestCase):
             # Assert on the final response data after redirect
             self.assertIn(b'Welcome, Test User!', response.data)
     
-            # Assert on the session contents
-            self.assertIn('user_id', c.session)
-            self.assertIn('role', c.session)
-            self.assertEqual(c.session['role'], 'user')
+            # Assert on the session contents from the history of the response
+            # The session is available on the response object of the last redirect
+            self.assertIn('user_id', response.history[0].request.environ.get('flask.request.environ')['werkzeug.request'].session)
+            self.assertIn('role', response.history[0].request.environ.get('flask.request.environ')['werkzeug.request'].session)
+            self.assertEqual(response.history[0].request.environ.get('flask.request.environ')['werkzeug.request'].session['role'], 'user')
+    
     
         # Test login with incorrect password
         with self.app as c:
@@ -67,6 +69,7 @@ class FlaskTestCase(unittest.TestCase):
                 password='wrongpassword'
             ), follow_redirects=True)
             self.assertIn(b'Invalid credentials.', response.data)
+            # For incorrect login, the session should not contain user_id or role
             self.assertNotIn('user_id', c.session)
             self.assertNotIn('role', c.session)
     
@@ -77,11 +80,10 @@ class FlaskTestCase(unittest.TestCase):
                 password='password'
             ), follow_redirects=True)
             self.assertIn(b'Invalid credentials.', response.data)
+            # For non-existent user, the session should not contain user_id or role
             self.assertNotIn('user_id', c.session)
             self.assertNotIn('role', c.session)
+    
 
-
-
-        
 if __name__ == '__main__':
     unittest.main()
