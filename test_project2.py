@@ -101,16 +101,16 @@ class FlaskTestCase(unittest.TestCase):
             self.assertIsNone(book)
 
 
-        def test_edit_book(self):
+    def test_edit_book(self):
         # Create an admin user and log in
         self.register_user('Admin User', 'admin', 'adminuser', 'admin@example.com', 'password')
         self.login('adminuser', 'password')
-    
+
         # Add a book to edit within an app context
         with app.app_context():
             book = self.add_book_helper('Book to Edit', 'Original Author', 10)
             book_id = book.id # Get the book ID while within the context
-    
+
         # Test successful book editing
         response = self.app.post(f'/edit_book/{book_id}', data=dict(
             title='Edited Book Title',
@@ -118,7 +118,7 @@ class FlaskTestCase(unittest.TestCase):
             total_copies='15'
         ), follow_redirects=True)
         self.assertIn(b'Book updated successfully.', response.data)
-    
+
         # Verify the book was updated in the database within a new app context
         with app.app_context():
             updated_book = Book.query.get(book_id)
@@ -128,14 +128,14 @@ class FlaskTestCase(unittest.TestCase):
             self.assertEqual(updated_book.total_copies, 15)
             # Available copies should be updated based on the difference
             self.assertEqual(updated_book.available_copies, 15) # Assuming no borrows yet
-    
+
         # Log out the admin
         self.logout()
-    
+
         # Create a regular user and log in
         self.register_user('Regular User', 'user', 'regularuser', 'user@example.com', 'password')
         self.login('regularuser', 'password')
-    
+
         # Test editing a book as a regular user (should be denied)
         response = self.app.post(f'/edit_book/{book_id}', data=dict(
             title='Attempted Edit',
@@ -143,16 +143,16 @@ class FlaskTestCase(unittest.TestCase):
             total_copies='20'
         ), follow_redirects=True)
         self.assertIn(b'Admin access only.', response.data)
-    
+
         # Verify the book was not changed within a new app context
         with app.app_context():
             unchanged_book = Book.query.get(book_id)
             self.assertEqual(unchanged_book.title, 'Edited Book Title')
-    
-    
+
+
         # Log out the regular user
         self.logout()
-    
+
         # Test editing a non-existent book as an admin
         self.login('adminuser', 'password')
         response = self.app.post('/edit_book/999', data=dict(
@@ -161,7 +161,7 @@ class FlaskTestCase(unittest.TestCase):
             total_copies='5'
         ), follow_redirects=True)
         self.assertIn(b'Book not found.', response.data)
-        
-    
-    if __name__ == '__main__':
+
+
+if __name__ == '__main__':
     unittest.main()
