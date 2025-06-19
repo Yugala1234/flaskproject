@@ -1,5 +1,5 @@
 import unittest
-from app import app, db, User, Book, Borrow, Waitlist, FineHistory
+from project2 import app, db, User, Book, Borrow, Waitlist, FineHistory
 from flask import session
 
 class LibrarySystemTestCase(unittest.TestCase):
