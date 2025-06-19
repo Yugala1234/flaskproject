@@ -1,6 +1,7 @@
 import unittest
 from project2 import app, db, User, Book, Borrow, Waitlist, FineHistory
 from flask import session
+from werkzeug.security import generate_password_hash
 
 class LibrarySystemTestCase(unittest.TestCase):
 
@@ -14,9 +15,12 @@ class LibrarySystemTestCase(unittest.TestCase):
         self.ctx.push()
         db.create_all()
 
-        # Create test users
-        self.admin = User(name='Admin', role='admin', username='admin', email='admin@test.com', password='admin')
-        self.user = User(name='User', role='user', username='user', email='user@test.com', password='user')
+        # Create test users with hashed passwords
+        self.admin = User(name='Admin', role='admin', username='admin',
+                          email='admin@test.com', password=generate_password_hash('admin'))
+        self.user = User(name='User', role='user', username='user',
+                         email='user@test.com', password=generate_password_hash('user'))
+
         db.session.add(self.admin)
         db.session.add(self.user)
         db.session.commit()
@@ -53,15 +57,13 @@ class LibrarySystemTestCase(unittest.TestCase):
         self.assertIn(b'Invalid credentials', response.data)
 
     def test_login_valid_user(self):
-        self.user.password = 'pbkdf2:sha256:150000$...hashed'
-        db.session.commit()
         response = self.login('user', 'user')
         self.assertIn(b'Welcome', response.data)
 
     def test_dashboard_redirect(self):
         self.login('user', 'user')
         response = self.app.get('/dashboard', follow_redirects=True)
-        self.assertIn(b'dashboard_user', str(response.data))  # adjust based on HTML template
+        self.assertIn('User Dashboard'.lower(), response.data.decode().lower())
 
     def test_add_book_as_admin(self):
         with self.app.session_transaction() as sess:
