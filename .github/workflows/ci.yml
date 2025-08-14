@@ -6,6 +6,10 @@ on:
   pull_request:
     branches:
       - main # Or your main development branch name
+  workflow_dispatch:
+   inputs:
+     runner-name:
+      description: "samle"
 
 jobs:
   build:
