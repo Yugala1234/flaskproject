@@ -1,0 +1,24 @@
+name: workflow_dispacth
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'the environment that deploy to'
+        required: true
+        default: production
+jobs:
+  build:
+    runs-on: unbuntu-latest
+    steps:
+      - name: Echo environment
+        run: echo "deploying to ${{ github.event.inputs.environment}}"
+        
+    
+
+   
+
+
+      
+
+
+
