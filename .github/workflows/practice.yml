@@ -8,7 +8,7 @@ on:
         default: production
 jobs:
   build:
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Echo environment
         run: echo "deploying to ${{ github.event.inputs.environment}}"
