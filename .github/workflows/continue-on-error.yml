@@ -1,0 +1,28 @@
+name: Continue on Error Example
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: This command will fail, but we don't want to stop the workflow
+      - name: Intentional Failure
+        run: exit 1
+        continue-on-error: true
+
+      # Step 3: This step will still run even though Step 2 failed
+      - name: Continue execution
+        run: echo "This step runs even if the previous one failed"
+
+      # Step 4: Another step
+      - name: Final step
+        run: echo "Workflow completed!"
